@@ -67,7 +67,7 @@ class _ChatPageState extends State<ChatPage> {
       input_message = '';
       _wordsSpoken = '';
       setState(() {
-        chatHistory.add(decoded['answer']);
+        chatHistory.add(decoded['answer'][0]); // Use only the first element
       });
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         _controller.animateTo(
@@ -173,7 +173,7 @@ class _ChatPageState extends State<ChatPage> {
                       final decoded = jsonDecode(data);
                       input_message = '';
                       setState(() {
-                        chatHistory.add(decoded['answer']);
+                        chatHistory.add(decoded['answer'][0]); // Use only the first element
                       });
                       // Scroll to the end of the list after updating chatHistory
                       WidgetsBinding.instance!.addPostFrameCallback((_) {
