@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speech_to_text_tutorial/my/chat.dart';
-import 'package:flutter_speech_to_text_tutorial/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
