@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speech_to_text_tutorial/my/chat_buble.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart';
-import 'chat_buble.dart';
 import 'constants.dart';
 
 class ChatPage extends StatefulWidget {
@@ -95,118 +95,119 @@ class _ChatPageState extends State<ChatPage> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: chatHistory.length,
-              itemBuilder: (context, index) {
-                final inputMessage = chatInputHistory[index];
-                final chatMessage = chatHistory[index];
-                return Column(
-                  children: [
-                    ChatBubble(message: inputMessage),
-                    chat_bot(message: chatMessage),
-                  ],
-                );
-              },
-              controller: _controller,
+      body: Container(
+        color: kBeigeColor,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: chatHistory.length,
+                itemBuilder: (context, index) {
+                  final inputMessage = chatInputHistory[index];
+                  final chatMessage = chatHistory[index];
+                  return Column(
+                    children: [
+                      ChatBubble(message: inputMessage),
+                      ChatBot(message: chatMessage),
+                    ],
+                  );
+                },
+                controller: _controller,
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _textEditingController,
-                    onChanged: (value) {
-                      setState(() {
-                        input_message = value;
-                        url =
-                            'https://final-chabot.onrender.com/predict?message=' +
-                                input_message.toString();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Send Message",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                        borderSide: BorderSide(color: kPrimaryColor),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textEditingController,
+                      onChanged: (value) {
+                        setState(() {
+                          input_message = value;
+                          url =
+                              'https://final-chabot.onrender.com/predict?message=' +
+                                  input_message.toString();
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Send Message",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+                          borderSide: BorderSide(color: kPrimaryColor),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: 5),
-                ElevatedButton(
-                  onPressed: () {
-                    if (isListening) {
-                      _stopListening();
-                    } else {
-                      _startListening();
-                    }
-                    isListening = !isListening; // Toggle the listening state
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    backgroundColor: isListening
-                        ? Colors.green
-                        : Colors.red, // Change color based on listening state
-                    padding: EdgeInsets.all(16.0),
+                  SizedBox(width: 5),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (isListening) {
+                        _stopListening();
+                      } else {
+                        _startListening();
+                      }
+                      isListening = !isListening; // Toggle the listening state
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: CircleBorder(),
+                      backgroundColor: isListening
+                          ? Colors.green
+                          : Colors.red, // Change color based on listening state
+                      padding: EdgeInsets.all(16.0),
+                    ),
+                    child: Icon(
+                      isListening
+                          ? Icons.mic
+                          : Icons.mic_off, // Change icon based on listening state
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Icon(
-                    isListening
-                        ? Icons.mic
-                        : Icons.mic_off, // Change icon based on listening state
-                    color: Colors.white,
+                  SizedBox(width: 5),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (input_message.isNotEmpty) {
+                        chatInputHistory.add(input_message.toString());
+                        _textEditingController.clear();
+                        final data = await fetchData(url);
+                        final decoded = jsonDecode(data);
+                        input_message = '';
+                        setState(() {
+                          chatHistory.add(decoded['answer'][0]); // Use only the first element
+                        });
+                        // Scroll to the end of the list after updating chatHistory
+                        WidgetsBinding.instance!.addPostFrameCallback((_) {
+                          _controller.animateTo(
+                            _controller.position.maxScrollExtent,
+                            duration: Duration(seconds: 1),
+                            curve: Curves.easeInOut,
+                          );
+                        });
+                      } else {
+                        print("Input message is empty");
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: CircleBorder(),
+                      backgroundColor: Colors.green,
+                      padding: EdgeInsets.all(10.0),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                    width:
-                        5), // Add some space between the text field and the button
-                ElevatedButton(
-                  onPressed: () async {
-                    if (input_message.isNotEmpty) {
-                      chatInputHistory.add(input_message.toString());
-                      _textEditingController.clear();
-                      final data = await fetchData(url);
-                      final decoded = jsonDecode(data);
-                      input_message = '';
-                      setState(() {
-                        chatHistory.add(decoded['answer'][0]); // Use only the first element
-                      });
-                      // Scroll to the end of the list after updating chatHistory
-                      WidgetsBinding.instance!.addPostFrameCallback((_) {
-                        _controller.animateTo(
-                          _controller.position.maxScrollExtent,
-                          duration: Duration(seconds: 1),
-                          curve: Curves.easeInOut,
-                        );
-                      });
-                    } else {
-                      print("Input message is empty");
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    backgroundColor: Colors.green,
-                    padding: EdgeInsets.all(10.0),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 35,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

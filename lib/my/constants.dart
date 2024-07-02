@@ -5,3 +5,4 @@ const kLogo = 'assets/images/scholar.png';
 const kMessagesCollections = 'messages';
 const kMessage = 'message';
 const kCreatedAt = 'createdAt';
+const kBeigeColor = Color(0xFFF5F5DC); // Custom beige color

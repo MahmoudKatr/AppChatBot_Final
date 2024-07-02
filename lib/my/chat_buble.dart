@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'constants.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -34,32 +33,32 @@ class ChatBubble extends StatelessWidget {
   }
 }
 
-class chat_bot extends StatelessWidget {
-    final String message; // Stores the incoming message
-  const chat_bot({
+class ChatBot extends StatelessWidget {
+  final String message; // Stores the incoming message
+
+  const ChatBot({
     super.key,
     required this.message, // Make 'message' a required parameter
   });
+
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
-        padding: EdgeInsets.only(left: 16, top: 32, bottom: 32, right: 32),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(32),
-            topRight: Radius.circular(32),
-            bottomLeft: Radius.circular(32),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(32.0),
+            topRight: Radius.circular(32.0),
+            bottomLeft: Radius.circular(32.0),
           ),
-          color: Color(0xff006D84),
+          color: Colors.blueGrey, // Adjust color to fit the theme
         ),
         child: Text(
           message,
-          style: TextStyle(
-            color: Colors.white,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );
